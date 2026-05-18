@@ -1,0 +1,14 @@
+Commands
+# This triggers 7045 with suspicious naming - enough to validate your rule
+New-Service -Name "AdminStartService" `
+            -BinaryPathName "%COMSPEC% /c start calc.exe" `
+            -DisplayName "Admin Start Svc" `
+            -StartupType Manual
+
+# Check your SIEM caught it
+Get-WinEvent -LogName System | 
+  Where-Object { $_.Id -eq 7045 } |
+  Select-Object -First 5 TimeCreated, Message
+
+# Cleanup
+sc.exe delete AdminStartService
